@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  user_service:
+    build:
+      context: ./user_service
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@user_db/user_db
+    depends_on:
+      - user_db
+      - rabbitmq
+
+  ad_service:
+    build:
+      context: ./ad_service
+    ports:
+      - "8003:8001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@ad_db/ad_db
+    depends_on:
+      - ad_db
+      - rabbitmq
+
+  user_db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5437:5432"
+
+  ad_db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ad_db
+    ports:
+      - "5438:5432"
+
+  rabbitmq:
+    image: rabbitmq:3
+    ports:
+      - "5672:5672"
